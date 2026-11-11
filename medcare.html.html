@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MedCare Roster Verify · Prototype (synthetic data)</title>
+<style>
+:root{--bg:#f4f6fb;--card:#fff;--ink:#1b1f3b;--mute:#5a6183;--line:#d9deea;--indigo:#2e3a8c;--indigo-soft:#e4e8f7;--teal:#0f8b8d;--teal-soft:#dff1f1;--amber:#b9770e;--amber-fill:#f6d99a;--amber-soft:#fbf0d6;--red:#c2453d;--red-soft:#f9e1df;--code:#1b1f3b;--codeink:#dce3f5;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#11142a;--card:#1b1f3b;--ink:#eef1f7;--mute:#a6adcc;--line:#343a60;--indigo:#9aa8f5;--indigo-soft:#2a3166;--teal:#4fd0c8;--teal-soft:#123d40;--amber:#f0b54a;--amber-fill:#6b4a12;--amber-soft:#3a2c10;--red:#f08a82;--red-soft:#48201d;--code:#0b0d1d;--codeink:#dce3f5}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#11142a;--card:#1b1f3b;--ink:#eef1f7;--mute:#a6adcc;--line:#343a60;--indigo:#9aa8f5;--indigo-soft:#2a3166;--teal:#4fd0c8;--teal-soft:#123d40;--amber:#f0b54a;--amber-fill:#6b4a12;--amber-soft:#3a2c10;--red:#f08a82;--red-soft:#48201d;--code:#0b0d1d;--codeink:#dce3f5}
+*{box-sizing:border-box}html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Calibri,"Segoe UI",system-ui,sans-serif}
+h1,h2,h3{font-family:Cambria,Georgia,serif;margin:0}
+header{background:var(--card);border-bottom:1px solid var(--line);padding:12px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
+.brand{font:700 18px Cambria,Georgia,serif}.brand span{color:var(--teal)}
+.pill{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:99px;white-space:nowrap}
+.p-syn{background:var(--amber-soft);color:var(--amber)}.p-flag{background:var(--amber-fill);color:var(--ink)}.p-ok{background:var(--teal);color:#fff}.p-rem{background:var(--red);color:#fff}.p-wait{background:var(--indigo-soft);color:var(--indigo)}.p-conf{background:var(--teal-soft);color:var(--teal)}
+nav{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap}
+nav button{border:1px solid var(--line);background:transparent;color:var(--ink);padding:8px 14px;border-radius:8px;font:600 14px inherit;cursor:pointer}
+nav button.on{background:var(--indigo);color:#fff;border-color:var(--indigo)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) nav button.on{color:#11142a}}
+main{max-width:1180px;margin:0 auto;padding:22px 20px 60px}
+.view{display:none}.view.on{display:block}
+.lead{color:var(--mute);margin:4px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.btn{border:0;border-radius:8px;padding:11px 14px;font:700 14px inherit;cursor:pointer;width:100%;margin-top:8px}
+.b-teal{background:var(--teal);color:#fff}.b-soft{background:var(--indigo-soft);color:var(--indigo)}.b-amber{background:var(--amber-fill);color:var(--ink)}.b-ind{background:var(--indigo);color:#fff}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+/* practice */
+.phonewrap{display:grid;grid-template-columns:minmax(0,400px) 1fr;gap:26px;align-items:start}
+.phone{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px;box-shadow:0 8px 24px rgba(27,31,59,.10)}
+.planbar{background:var(--indigo);color:#fff;border-radius:10px;padding:10px 14px;font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .planbar,:root:not([data-theme="light"]) .b-ind{color:#11142a}}
+.task{border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:12px}
+.task h3{font-size:17px;margin:6px 0}.why{font-size:13px;color:var(--mute)}
+.done{background:var(--teal-soft);border-color:transparent}
+.site{display:flex;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:14px}.site small{margin-left:auto;color:var(--mute)}
+input[type=text],input[type=date],select{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:9px 10px;font:inherit;width:100%}
+.explain li{margin:6px 0}.explain{color:var(--mute);padding-left:18px}
+/* plan */
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.tile b{display:block;font:700 26px Cambria,Georgia,serif;color:var(--indigo)}.tile span{font-size:13px;color:var(--mute)}
+.split{display:grid;grid-template-columns:1.35fr 1fr;gap:16px;align-items:start}
+.scroll{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);padding:8px}
+td{padding:10px 8px;border-top:1px solid var(--line);vertical-align:top}
+tr.row{cursor:pointer}tr.row:hover td,tr.sel td{background:var(--indigo-soft)}
+.risk{font-weight:700}.sig{font-size:13px;color:var(--mute)}
+.box{border-radius:10px;padding:10px 12px;margin-top:10px;font-size:14px}
+.warn{background:var(--red-soft);color:var(--red);font-weight:700}.okb{background:var(--teal-soft);color:var(--teal);font-weight:700}.note{background:var(--indigo-soft);color:var(--indigo)}
+/* history */
+.tl{list-style:none;margin:0;padding:0 0 0 18px;border-left:2px solid var(--line)}
+.tl li{position:relative;padding:0 0 16px 14px}.tl li:before{content:"";position:absolute;left:-25px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--indigo)}
+.tl li.s:before{background:var(--amber)}.tl li.p:before{background:var(--teal)}
+.tl small{color:var(--mute);display:block}
+pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:14px;font:13px/1.5 "Courier New",monospace;overflow-x:auto;margin:0}
+footer{color:var(--mute);font-size:12px;text-align:center;padding:0 20px 30px}
+@media (max-width:860px){.phonewrap,.split{grid-template-columns:1fr}.tiles{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">MedCare <span>Roster Verify</span></div>
+  <span class="pill p-syn">Synthetic data only</span>
+  <nav>
+    <button id="tab-practice" class="on" onclick="show('practice')">1 · Practice view</button>
+    <button id="tab-plan" onclick="show('plan')">2 · Plan operations</button>
+    <button id="tab-history" onclick="show('history')">3 · Record history</button>
+    <button id="reset" onclick="reset()">Reset demo</button>
+  </nav>
+</header>
+<main>
+  <section id="practice" class="view on">
+    <h1>One question, not another portal</h1>
+    <p class="lead">What a practice administrator sees when the plan’s data suggests something changed. No account, no roster re-entry.</p>
+    <div class="phonewrap">
+      <div class="phone">
+        <div class="planbar">Northgate Health Plan · Verification</div>
+        <div id="ptasks"></div>
+      </div>
+      <div class="card">
+        <h2 style="font-size:19px">Why it works this way</h2>
+        <ul class="explain">
+          <li><b>Evidence first.</b> The practice is asked only when plan-side signals (claims, member reports) point to a change.</li>
+          <li><b>One tap.</b> Confirm, correct the site, or mark as left. The plan never asks for the whole roster again.</li>
+          <li><b>A reward that matters.</b> Answering pauses the plan’s calls for this verification cycle.</li>
+          <li><b>Safe by design.</b> A practice ID check comes first, payment details are never editable here, and nothing is removed on a prediction.</li>
+        </ul>
+        <div class="box note">Try it: verify with practice ID <b>4821</b>, answer both questions, then open <b>Plan operations</b>.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="plan" class="view">
+    <h1>Verification queue</h1>
+    <p class="lead">Northgate Health Plan · network operations. Ranked by risk, with the evidence behind every flag.</p>
+    <div class="tiles" id="tiles"></div>
+    <div class="split">
+      <div class="card scroll"><table><thead><tr><th>Clinician</th><th>Signal</th><th>Risk</th><th>Status</th></tr></thead><tbody id="queue"></tbody></table></div>
+      <div class="card" id="detail"></div>
+    </div>
+  </section>
+
+  <section id="history" class="view">
+    <h1>Record history</h1>
+    <p class="lead">Every change keeps its source, its owner and its timestamp. This is the audit trail and the “real-time” query in one place.</p>
+    <div class="split">
+      <div class="card">
+        <label class="why" for="pick">Record</label>
+        <select id="pick" onchange="sel=this.value;render()"></select>
+        <h2 style="font-size:17px;margin:16px 0 12px">Timeline</h2>
+        <ul class="tl" id="timeline"></ul>
+      </div>
+      <div>
+        <div class="card scroll"><h2 style="font-size:17px;margin-bottom:8px">Who owns each field</h2><table><thead><tr><th>Field</th><th>Value</th><th>Owner</th></tr></thead><tbody id="fields"></tbody></table></div>
+        <div class="card" style="margin-top:16px"><h2 style="font-size:17px;margin-bottom:8px">Read API response</h2><pre id="api"></pre></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer>Prototype for the MedCare provider roster case. All names, plans, practices and numbers are invented. No real patient or provider information.</footer>
+
+<script>
+const SEED = () => [
+ {id:'ortiz',name:'Dr. L. Ortiz',spec:'Family medicine',group:'Oakview Medical Group',type:'departure',site:'412 Elm St',signals:['No claims at this site for 74 days','2 member reports: “no longer here”'],risk:92,status:'flagged',fresh:81,adq:{ok:true,text:'Removing leaves 3 family physicians within 10 miles (minimum 2)'},mine:true},
+ {id:'rao',name:'Dr. K. Rao',spec:'Cardiology',group:'Oakview Medical Group',type:'phantom',sites:[['88 Pine Ave',214],['19 Lake Rd',131],['412 Elm St',0],['7 Mill Ct',0],['230 Bay St',0],['51 Ridge Way',0]],signals:['Listed at 6 sites; claims at 2 in 12 months'],risk:88,status:'flagged',fresh:77,adq:{ok:true,text:'No removal of the clinician; 4 unused site listings would be dropped'},mine:true},
+ {id:'patel',name:'Dr. S. Patel',spec:'Pediatric cardiology',group:'Harbor Pediatrics',type:'departure',site:'60 Quay Rd',signals:['No claims at this site for 96 days','Federal directory shows a new affiliation'],risk:85,status:'confirmed',answer:'Practice confirmed: left on 30 Sep 2026',fresh:2,adq:{ok:false,text:'Removing leaves 1 pediatric cardiologist within 30 miles (minimum 2)'}},
+ {id:'alvarez',name:'Dr. J. Alvarez',spec:'Dermatology',group:'Lakemont Skin Clinic',type:'phantom',signals:['Listed at 4 sites; claims at 1 in 12 months'],risk:71,status:'asked',fresh:64,adq:{ok:true,text:'No removal of the clinician'}},
+ {id:'banerjee',name:'Dr. R. Banerjee',spec:'Orthopedics',group:'Summit Bone & Joint',type:'departure',site:'9 Crest Blvd',signals:['Claims fell 90% vs specialty baseline'],risk:58,status:'asked',fresh:59,adq:{ok:true,text:'Removing leaves 6 orthopedists within 15 miles (minimum 2)'}},
+ {id:'chen',name:'Dr. M. Chen',spec:'Internal medicine',group:'Oakview Medical Group',type:'ok',signals:['Confirmed by practice'],risk:8,status:'verified',fresh:12,adq:{ok:true,text:'No change pending'}},
+ {id:'nguyen',name:'Dr. T. Nguyen',spec:'Obstetrics',group:'Riverbend Women’s Health',type:'ok',signals:['Steady claims at listed site'],risk:6,status:'verified',fresh:30,adq:{ok:true,text:'No change pending'}},
+ {id:'whitfield',name:'Dr. E. Whitfield',spec:'Psychiatry',group:'Lakemont Behavioral',type:'ok',signals:['Telehealth-only; baseline adjusted'],risk:14,status:'verified',fresh:41,adq:{ok:true,text:'No change pending'}}
+];
+const EV0 = () => ({
+ ortiz:[['3 Nov 2026','s','Signal raised','No claims at 412 Elm St for 74 days · source: plan claims']],
+ rao:[['3 Nov 2026','s','Signal raised','Claims at 2 of 6 listed sites in 12 months · source: plan claims']],
+ patel:[['1 Nov 2026','s','Signal raised','No claims for 96 days · source: plan claims'],['2 Nov 2026','','Question sent','One-tap question from the plan’s domain'],['9 Nov 2026','p','Practice answered','Left on 30 Sep 2026 · owner: practice']],
+ alvarez:[['5 Nov 2026','s','Signal raised','Claims at 1 of 4 listed sites · source: plan claims'],['6 Nov 2026','','Question sent','One-tap question from the plan’s domain']],
+ banerjee:[['7 Nov 2026','s','Signal raised','Claims fell 90% vs specialty baseline · source: plan claims'],['8 Nov 2026','','Question sent','One-tap question from the plan’s domain']],
+ chen:[['30 Oct 2026','p','Practice answered','Still at 88 Pine Ave · owner: practice'],['30 Oct 2026','','Published','Directory receipt confirmed']],
+ nguyen:[['12 Oct 2026','p','Practice answered','Still at listed site · owner: practice']],
+ whitfield:[['1 Oct 2026','p','Practice answered','Telehealth only · owner: practice']]
+});
+let R, EV, sel, idOk, TODAY='11 Nov 2026';
+const $=id=>document.getElementById(id);
+const rec=id=>R.find(r=>r.id===id);
+const PILL={flagged:['p-flag','Flagged'],asked:['p-wait','Awaiting practice'],confirmed:['p-conf','Practice confirmed'],published:['p-ok','Published'],verified:['p-ok','Verified']};
+const pill=s=>`<span class="pill ${PILL[s][0]}">${PILL[s][1]}</span>`;
+function reset(){R=SEED();EV=EV0();sel='ortiz';idOk=false;render();show('practice')}
+function show(v){['practice','plan','history'].forEach(x=>{$(x).classList.toggle('on',x===v);$('tab-'+x).classList.toggle('on',x===v)});window.scrollTo(0,0)}
+function log(id,cls,t,d){EV[id].push([TODAY,cls,t,d])}
+function verifyId(){ if($('pid').value.trim()==='4821'){idOk=true;render()} else $('piderr').textContent='That ID doesn’t match. Demo ID is 4821.' }
+function answer(id,kind){const r=rec(id);
+  if(kind==='yes'){r.answer='Practice confirmed: still at '+r.site;r.keep=true}
+  if(kind==='moved'){r.answer='Practice confirmed: works at 88 Pine Ave, not '+r.site}
+  if(kind==='left'){const d=$('leftdate').value||'2026-10-31';r.answer='Practice confirmed: left on '+d}
+  if(kind==='sites'){const on=[...document.querySelectorAll('.sitebox:checked')].map(c=>c.value);r.kept=on;r.answer='Practice confirmed: works at '+on.length+' of '+r.sites.length+' sites ('+on.join(', ')+')'}
+  r.status='confirmed';r.fresh=0;log(id,'p','Practice answered',r.answer.replace('Practice confirmed: ','')+' · owner: practice');sel=id;render()}
+function ask(id){const r=rec(id);r.status='asked';log(id,'','Question sent','One-tap question from the plan’s domain');render()}
+function approve(id){const r=rec(id);r.status='published';r.fresh=0;r.risk=5;log(id,'','Plan approved','Approved by network operations');log(id,'','Published','Directory updated · receipt confirmed');render()}
+function pick(id){sel=id;render()}
+
+function renderPractice(){
+  let h='<div class="task"><div class="why">Oakview Medical Group</div>';
+  if(!idOk){h+=`<h3>Confirm it’s you</h3><div class="why">Enter the last 4 digits of your practice ID. (Demo: 4821)</div><input id="pid" type="text" inputmode="numeric" maxlength="4" style="margin-top:10px" aria-label="Practice ID last 4 digits"><div id="piderr" class="why" style="color:var(--red)"></div><button class="btn b-ind" id="verify" onclick="verifyId()">Verify practice</button></div>`;$('ptasks').innerHTML=h;return}
+  h+='<h3>2 items need a quick look</h3><div class="why">About 20 seconds each. Answering pauses our calls this cycle.</div></div>';
+  const o=rec('ortiz'),k=rec('rao');
+  if(o.status==='flagged'||o.status==='asked'){h+=`<div class="task"><span class="pill p-flag">Possible departure</span><h3>Is ${o.name} still seeing patients at ${o.site}?</h3><div class="why">We noticed no claims from this site for 74 days.</div><button class="btn b-teal" id="o-yes" onclick="answer('ortiz','yes')">Yes, still here</button><button class="btn b-soft" id="o-moved" onclick="answer('ortiz','moved')">Works at another site</button><div style="display:flex;gap:8px;align-items:end"><input id="leftdate" type="date" value="2026-08-28" aria-label="Date left" style="margin-top:8px"><button class="btn b-amber" id="o-left" onclick="answer('ortiz','left')">Left on this date</button></div></div>`}
+  else h+=`<div class="task done"><b>${o.name}</b><div class="why">${o.answer}. Thank you.</div></div>`;
+  if(k.status==='flagged'||k.status==='asked'){h+=`<div class="task"><span class="pill p-flag">Possible phantom locations</span><h3>Which sites does ${k.name} actually work at?</h3><div class="why">Listed at 6 sites. We pre-ticked the ones with recent claims.</div>${k.sites.map(s=>`<label class="site"><input class="sitebox" type="checkbox" value="${s[0]}" ${s[1]?'checked':''}> ${s[0]} <small>${s[1]?s[1]+' claims':'0 claims in 12 months'}</small></label>`).join('')}<button class="btn b-teal" id="k-confirm" onclick="answer('rao','sites')">Confirm these sites</button></div>`}
+  else h+=`<div class="task done"><b>${k.name}</b><div class="why">${k.answer}. Thank you.</div></div>`;
+  if(o.status!=='flagged'&&o.status!=='asked'&&k.status!=='flagged'&&k.status!=='asked') h+='<div class="task done"><h3>All done</h3><div class="why">No more calls about these clinicians this verification cycle.</div></div>';
+  $('ptasks').innerHTML=h}
+
+function renderPlan(){
+  const c=s=>R.filter(r=>r.status===s).length;
+  $('tiles').innerHTML=[[18,'records due in the 90-day window'],[0,'updates late past 2 business days'],[c('flagged')+c('asked'),'flags awaiting the practice'],[c('confirmed'),'confirmed, ready to approve']].map(t=>`<div class="card tile"><b>${t[0]}</b><span>${t[1]}</span></div>`).join('');
+  $('queue').innerHTML=[...R].sort((a,b)=>b.risk-a.risk).map(r=>`<tr class="row ${r.id===sel?'sel':''}" id="row-${r.id}" onclick="pick('${r.id}')"><td><b>${r.name}</b><div class="sig">${r.spec} · ${r.group}</div></td><td class="sig">${r.signals[0]}</td><td class="risk">${r.risk}</td><td>${pill(r.status)}</td></tr>`).join('');
+  const r=rec(sel);let h=`<h2 style="font-size:19px">${r.name}</h2><div class="why">${r.spec} · ${r.group}${r.site?' · '+r.site:''}</div><div style="margin-top:8px">${pill(r.status)}</div><h3 style="font-size:15px;margin-top:14px">Evidence</h3><ul class="explain" style="margin:6px 0">${r.signals.map(s=>'<li>'+s+'</li>').join('')}</ul>`;
+  if(r.answer) h+=`<div class="box okb">${r.answer}</div>`;
+  h+=`<div class="box ${r.adq.ok?'note':'warn'}">Adequacy check: ${r.adq.text}</div>`;
+  if(r.status==='flagged') h+=`<button class="btn b-ind" id="ask" onclick="ask('${r.id}')">Send one-tap question to the practice</button><div class="box note">Removal is blocked: a flag is a lead, not an attestation.</div>`;
+  if(r.status==='asked') h+='<div class="box note">Waiting for the practice. If no answer, normal outreach continues, then the verify-or-remove rule applies.</div>';
+  if(r.status==='confirmed') h+=`<button class="btn b-teal" id="approve" onclick="approve('${r.id}')">${r.adq.ok?'Approve and publish':'Approve anyway and notify network team'}</button>`;
+  if(r.status==='published') h+='<div class="box okb">Published to the directory · receipt confirmed · claims system can pull the change</div>';
+  h+=`<button class="btn b-soft" id="tohist" onclick="show('history')">Open record history</button>`;
+  $('detail').innerHTML=h}
+
+function renderHistory(){
+  $('pick').innerHTML=R.map(r=>`<option value="${r.id}" ${r.id===sel?'selected':''}>${r.name} · ${r.group}</option>`).join('');
+  const r=rec(sel);
+  $('timeline').innerHTML=EV[r.id].map(e=>`<li class="${e[1]}"><b>${e[2]}</b><small>${e[0]} · ${e[3]}</small></li>`).join('');
+  const sites=r.kept?r.kept.join(', '):(r.sites?r.sites.map(s=>s[0]).join(', '):(r.site||'Listed site'));
+  $('fields').innerHTML=[['Practice sites',sites,'Practice'],['Affiliation',r.answer&&/left/.test(r.answer)?'Ended (practice-confirmed)':'Active','Practice + clinician'],['Network status','Participating','Plan contracting system'],['Credentialing','Current','Credentialing authority'],['Payment details','Not editable here','Plan only']].map(f=>`<tr><td><b>${f[0]}</b></td><td>${f[1]}</td><td class="sig">${f[2]}</td></tr>`).join('');
+  $('api').textContent='GET /v1/records/'+r.id+'\n'+JSON.stringify({clinician:r.name,status:r.status,freshness_days:r.fresh,last_event:EV[r.id][EV[r.id].length-1][2],sites_owner:'practice',network_status_owner:'plan',pending_flags:(r.status==='flagged'||r.status==='asked')?r.signals.length:0},null,2)}
+function render(){renderPractice();renderPlan();renderHistory()}
+reset();
+</script>
+</body>
+</html>
